@@ -51,13 +51,15 @@ var log         = require('./log.js').getLogger(filename);
  * 
  */
 function XMPPLookupService(port, stream) {
+    log.trace("stream.to: %s, port: %s, stream.route. %s", stream.to, port, stream.route);
     this._domain_name = stream.to;
     this._port = port;
     this._route = stream.route;
 
     var _special = {
         "gmail.com": "talk.google.com",
-        "chat.facebook.com": "chat.facebook.com"
+        "chat.facebook.com": "chat.facebook.com",
+        "localhost": "zeus.think5.de"
     };
 
     if (_special.hasOwnProperty(this._domain_name)) {
@@ -65,7 +67,8 @@ function XMPPLookupService(port, stream) {
             this._route = {
                 protocol: "xmpp",
                 host: _special[this._domain_name],
-                port: this._port
+                //port: this._port
+                port: 5232
             };
         }
     }

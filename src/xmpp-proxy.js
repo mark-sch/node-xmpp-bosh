@@ -153,6 +153,7 @@ dutil.copy(XMPPProxy.prototype, {
         var _attrs = { };
         dutil.copy(_attrs, stream_attrs);
         dutil.extend(_attrs, this._default_stream_attrs);
+log.debug("_get_stream_xml_open: %s", _attrs.toString());
         return new ltx.Element('stream:stream', _attrs).toString().replace(/\/>$/, '>');
     }, 
 
@@ -274,7 +275,9 @@ dutil.copy(XMPPProxy.prototype, {
             this.terminate();
         }
         else {
+            log.info("stream_start_attrs: %s",this.stream_start_attrs);
             var _ss_open = this._get_stream_xml_open(this.stream_start_attrs);
+            log.debug("_get_stream_xml_open: %s",_ss_open);
 
             // Always, we connect on behalf of the real client.
             this.send(_ss_open);
@@ -284,7 +287,16 @@ dutil.copy(XMPPProxy.prototype, {
     }, 
 
     _on_data: function(d) {
-        log.debug("%s %s _on_data RECD %s bytes", this._void_star.session.sid, this._void_star.name, d.length);
+        log.debug("%s %s _on_data RECD %s bytes: %s", this._void_star.session.sid, this._void_star.name, d.length, d);
+        
+        var e;
+        if (d.toString().indexOf('<stream') != -1) {
+          log.debug(util.inspect(d) + " ### " + d.length);
+        var mystream = d.toString() + "<stream:features xmlns:stream='http://etherx.jabber.org/streams'><mechanism><auth xmlns='http://jabber.org/features/iq-auth'/></mechanism></stream:features>";
+          e = new Buffer(mystream.length);
+          e.write(mystream);
+          log.debug(e.toString('utf-8'));
+        }
 
         var stanza_size = this._parser.getCurrentByteIndex - this._prev_byte_index;
 
@@ -294,12 +306,13 @@ dutil.copy(XMPPProxy.prototype, {
             this._on_stream_end();
         } else {
             this._parser.parse(d);
+            if (e) this._parser.parse(e);
         }
     },
 
     _on_stream_start: function(attrs) {
         log.trace("%s %s _on_stream_start: stream started", this._void_star.session.sid, this._void_star.name);
-        this._stream_attrs = { };
+        this._stream_attrs = {  };
         dutil.copy(this._stream_attrs, attrs, ["xmlns:stream", "xmlns", "version"]);
     },
 

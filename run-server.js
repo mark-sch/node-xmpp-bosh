@@ -29,7 +29,7 @@ var path  = require('path');
 var nxb   = require("./src/main.js");
 var dutil = require('./src/dutil.js');
 
-var BOSH_DEFAULT_CONFIG_PATH = '/etc/bosh.js.conf';
+var BOSH_DEFAULT_CONFIG_PATH = './bosh.js.conf';
 
 
 function app_meta() {
