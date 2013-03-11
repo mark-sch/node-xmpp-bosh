@@ -1,5 +1,7 @@
 # node-xmpp-bosh
 
+Quickfix: Added legacy authentication support for non SASL servers by injecting stream features. Tested with strophe.js.
+
 An XMPP BOSH & WebSocket server (connection manager) written using node.js in Javascript
 
 Project Home Page:
